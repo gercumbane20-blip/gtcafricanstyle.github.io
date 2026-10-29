@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GTC — Painel de Edição</title><link rel="stylesheet" href="styles.css"></head>
+<body class="admin-body">
+<header class="header"><a class="brand" href="index.html"><img src="assets/gtc-logo.png"><span>GTC <small>PAINEL DE EDIÇÃO</small></span></a><a class="admin-link" href="index.html">Ver website</a></header>
+<main class="section admin">
+  <p class="eyebrow">GTC SMART ADMIN</p><h1>Editar website</h1>
+  <p class="admin-note">As alterações abaixo ficam guardadas neste navegador. Para um painel online com login e base de dados, esta estrutura pode ser ligada a um servidor posteriormente.</p>
+  <label>Título principal<input id="heroTitle"></label>
+  <label>Texto principal<textarea id="heroText"></textarea></label>
+  <label>Sobre a empresa<input id="aboutTitle"></label>
+  <label>Descrição<textarea id="aboutText"></textarea></label>
+  <label>Visão<textarea id="vision"></textarea></label>
+  <label>Missão<textarea id="mission"></textarea></label>
+  <h2>Serviços</h2><div id="servicesEditor"></div>
+  <button class="btn primary" id="addService">+ Adicionar serviço</button>
+  <div class="admin-actions"><button class="btn primary" id="save">Guardar alterações</button><button class="btn outline" id="reset">Restaurar versão inicial</button></div>
+</main>
+<script>
+const defaults={services:[["01","Moda & Vestuário","Camisetas, bonés, calças e acessórios africanos, com personalização disponível."],["02","Comércio Geral","Produtos nacionais e importados, revenda e distribuição."],["03","Personalização","Serigrafia, bordados, uniformes e soluções personalizadas para empresas."],["04","Marketing & Branding","Gestão de redes sociais, identidade visual, conteúdos e campanhas."],["05","Eventos & Cultura","Feiras, exposições, eventos promocionais e iniciativas de impacto cultural."]],vision:"Ser uma marca moçambicana de referência em multisserviços, reconhecida pela qualidade, diversidade de soluções, identidade africana e impacto positivo no mercado local e regional.",mission:"Oferecer produtos e serviços diversificados, acessíveis e personalizados, promovendo a cultura africana, inovação comercial e desenvolvimento sustentável de parcerias e comunidades."};
+let d={...defaults,...JSON.parse(localStorage.getItem("gtcData")||"{}")};
+const $=id=>document.getElementById(id);
+$("heroTitle").value=localStorage.getItem("gtcHeroTitle")||"Identidade africana. Soluções modernas.";
+$("heroText").value=localStorage.getItem("gtcHeroText")||"Uma marca moçambicana criada para unir comércio, serviços, personalização, marketing, branding, eventos e cultura numa experiência profissional e versátil.";
+$("aboutTitle").value=localStorage.getItem("gtcAboutTitle")||"Uma marca com raízes africanas e visão de futuro.";
+$("aboutText").value=localStorage.getItem("gtcAboutText")||"A GTC African Style – Multiservice é uma iniciativa empreendedora moçambicana concebida para atuar de forma integrada em diversas áreas de venda e prestação de serviços, valorizando a identidade africana, a inovação comercial e a adaptação às necessidades do mercado.";
+$("vision").value=d.vision;$("mission").value=d.mission;
+function render(){ $("servicesEditor").innerHTML=d.services.map((s,i)=>`<div class="edit-card"><div><b>Serviço ${i+1}</b><button class="remove" onclick="removeService(${i})">Remover</button></div><input data-i="${i}" data-k="0" value="${s[0]}" placeholder="Número"><input data-i="${i}" data-k="1" value="${s[1]}" placeholder="Nome"><textarea data-i="${i}" data-k="2" placeholder="Descrição">${s[2]}</textarea></div>`).join("");}
+window.removeService=i=>{d.services.splice(i,1);render()};
+render();
+$("addService").onclick=()=>{d.services.push([String(d.services.length+1).padStart(2,"0"),"Novo serviço","Descreva aqui o novo serviço."]);render()};
+$("save").onclick=()=>{document.querySelectorAll("[data-i]").forEach(el=>d.services[+el.dataset.i][+el.dataset.k]=el.value);localStorage.setItem("gtcData",JSON.stringify(d));["heroTitle","heroText","aboutTitle","aboutText"].forEach(id=>localStorage.setItem("gtc"+id.charAt(0).toUpperCase()+id.slice(1),$(id).value));localStorage.setItem("gtcVision",$("vision").value);d.vision=$("vision").value;d.mission=$("mission").value;localStorage.setItem("gtcData",JSON.stringify(d));alert("Alterações guardadas. Abra o website para ver a versão atualizada.")};
+$("reset").onclick=()=>{if(confirm("Restaurar a versão inicial?")){localStorage.clear();location.reload()}};
+</script>
+</body></html>
